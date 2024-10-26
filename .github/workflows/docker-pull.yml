@@ -1,0 +1,29 @@
+name: Pull Docker Image from Aliyun
+
+on:
+  push:
+    branches:
+      - main  # 仅在推送到 main 分支时触发
+
+jobs:
+  pull-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Log in to Aliyun Docker Registry
+        env:
+          ALIYUN_REGISTRY: ${{ secrets.ALIYUN_REGISTRY }}
+          ALIYUN_REGISTRY_USER: ${{ secrets.ALIYUN_REGISTRY_USER }}
+          ALIYUN_REGISTRY_PASSWORD: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
+        run: |
+          echo "${{ secrets.ALIYUN_REGISTRY_PASSWORD }}" | docker login --username "${{ secrets.ALIYUN_REGISTRY_USER }}" --password-stdin ${{ secrets.ALIYUN_REGISTRY }}
+
+      - name: Pull Docker Image
+        env:
+          ALIYUN_REGISTRY: ${{ secrets.ALIYUN_REGISTRY }}
+          ALIYUN_NAME_SPACE: ${{ secrets.ALIYUN_NAME_SPACE }}
+        run: |
+          docker pull ${{ secrets.ALIYUN_REGISTRY }}/$ALIYUN_NAME_SPACE/awu6688
